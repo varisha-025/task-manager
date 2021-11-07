@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 
 // schema for user collection
 const UserSchema = new Schema({
+
     name: {
         type: String,
         required: true
