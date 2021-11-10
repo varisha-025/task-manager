@@ -1,18 +1,20 @@
 import Navbar from "./components/Navbar";
+// import Tasks from "./components/Tasks";
+import TaskState from "./context/TaskState";
+import About from "./components/About";
 import {
     BrowserRouter as Router,
     Switch,
-    Route,
-    Link
+    Route
 } from "react-router-dom";
-import Index from "./components/Index";
+import Home from "./components/Home.js";
 
 function App() {
-    return ( < Router >
+    return ( < >
         <
-        div >
+        TaskState >
         <
-        div className = "App" >
+        Router >
         <
         Navbar / >
         <
@@ -20,16 +22,20 @@ function App() {
         <
         Switch >
         <
-        Route exact path = "/"
-        component = { Index }
-        /> < /
-        Switch > <
-        /div> < /
-        div >
-
+        Route exact path = "/" >
         <
-        /div>  < /
-        Router >
+        Home / >
+        <
+        /Route>  <
+        Route exact path = "/about" >
+        <
+        About / >
+        <
+        /Route>  < /
+        Switch > <
+        /div>< /Router >
+        <
+        /TaskState>< / >
 
     );
 }
