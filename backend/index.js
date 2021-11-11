@@ -1,10 +1,15 @@
 // import from db to connect database
 const MongoConnect = require('./db')
 MongoConnect();
-
 const express = require('express')
 const app = express()
-    // port must not be 3000 as our react app will work on it.
+var cors = require('cors')
+
+
+app.use(cors())
+
+
+// port must not be 3000 as our react app will work on it.
 const port = 5000
 
 // middleware by express

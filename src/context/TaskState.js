@@ -2,49 +2,88 @@ import React, { useState } from "react";
 import TaskContext from "./TaskContext";
 
 const TaskState = (props) => {
+    const host = "http://localhost:5000";
 
-        let initial = [{
-                "_id": "6187ab83d55075109caab207",
-                "user": "6187a724547a62c574190d98",
-                "title": "Grocery Shopping",
-                "description": "Eggs,milk,broccoli,pasta,cheese before 5:00 PM",
-                "reminder": "false",
-                "date": "2021-11-07T10:33:39.733Z",
-                "__v": 0
-            },
-            {
-                "_id": "61891eb016a27395fa82a883",
-                "user": "6187a724547a62c574190d98",
-                "title": "POAC quiz",
-                "description": "Quiz tomorrow at 1:00 PM on canvas",
-                "reminder": "true",
-                "date": "2021-11-08T12:57:20.178Z",
-                "__v": 0
-            },
-            {
-                "_id": "61891ed516a27395fa82a885",
-                "user": "6187a724547a62c574190d98",
-                "title": "Dry Cleaning",
-                "description": "Pick up dry cleaning between 4:00-5:00 PM",
-                "reminder": "true",
-                "date": "2021-11-08T12:57:57.647Z",
-                "__v": 0
-            },
-            {
-                "_id": "61891f0016a27395fa82a887",
-                "user": "6187a724547a62c574190d98",
-                "title": "Hit the gym",
-                "description": "Go to the gym and eat preworkout 2 hrs prior to it.",
-                "reminder": "false",
-                "date": "2021-11-08T12:58:40.495Z",
-                "__v": 0
+    let initial = [];
+
+    const [tasks, setTasks] = useState(initial);
+
+    // Get all note
+    const getTasks = async () => {
+        const response = await fetch(`${host}/api/tasks/fetchAllTasks`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjE4N2E3MjQ1NDdhNjJjNTc0MTkwZDk4In0sImlhdCI6MTYzNjI4MTE3M30._8n85HW-GQJhrLmk8weuBAehRASZwOmpa34pvMX8_Tg"
             }
-        ]
+        });
+        const json = await response.json();
+        setTasks(json);
+    }
+    // Add a note
+    const addTask = async (title, description, reminder) => {
+        const response = await fetch(`${host}/api/tasks/addTask`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjE4N2E3MjQ1NDdhNjJjNTc0MTkwZDk4In0sImlhdCI6MTYzNjI4MTE3M30._8n85HW-GQJhrLmk8weuBAehRASZwOmpa34pvMX8_Tg"
+            },
+            body: JSON.stringify({ title, description, reminder })
+        });
+        
+        const task = await response.json();
 
-        const [tasks, setTasks] = useState(initial);
-        return ( < TaskContext.Provider value = {
-                { tasks, setTasks }
-            } > { props.children } < /TaskContext.Provider>)
-        };
+        setTasks(tasks.concat(task));
+    }
+    // edit a node
+    const editTask = async (id, title, description, reminder) => {
+        const response = await fetch(`${host}/api/tasks/updateTask/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjE4N2E3MjQ1NDdhNjJjNTc0MTkwZDk4In0sImlhdCI6MTYzNjI4MTE3M30._8n85HW-GQJhrLmk8weuBAehRASZwOmpa34pvMX8_Tg"
+            },
+            body: JSON.stringify({ title, description, reminder })
+        });
+        const json = response.json();
+        // we cant update the state directly so we create a copy of that state and then chnage the note as given by the user and then set the updated state again
+        let newTasks = JSON.parse(JSON.stringify(tasks))
+        for (let index = 0; index < newTasks.length; index++) {
+            const elem = newTasks[index];
+            // if the task id matches then update that note
+            if (elem._id === id) {
+                newTasks[index].title = title;
+                newTasks[index].description = description;
+                newTasks[index].reminder = reminder;
+                break;
+            }
 
-        export default TaskState;
+        }
+        // setting  the updated state again
+        setTasks(newTasks);
+    }
+    // delete note
+    const deleteTask = async (id) => {
+        const response = await fetch(`${host}/api/tasks/deleteTask/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjE4N2E3MjQ1NDdhNjJjNTc0MTkwZDk4In0sImlhdCI6MTYzNjI4MTE3M30._8n85HW-GQJhrLmk8weuBAehRASZwOmpa34pvMX8_Tg"
+            }
+        });
+        const json = response.json();
+        console.log(json)
+        // filter helps in deleting the note from the frontend
+        let newTasks = tasks.filter((elem) => {
+            return elem._id !== id;
+        })
+        // setting the updated state
+        setTasks(newTasks);
+        // console.log("delete button has been clicked", id)
+    }
+    // exporting all the CRUD functions made for tasks.
+    return (<TaskContext.Provider value={
+        { tasks, addTask, editTask, deleteTask, getTasks }}> {props.children}
+    </TaskContext.Provider>)
+};
+export default TaskState;

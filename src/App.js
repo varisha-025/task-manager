@@ -8,34 +8,27 @@ import {
     Route
 } from "react-router-dom";
 import Home from "./components/Home.js";
+import Alert from "./components/Alert";
 
 function App() {
     return ( < >
-        <
-        TaskState >
-        <
-        Router >
-        <
-        Navbar / >
-        <
-        div className = "container" >
-        <
-        Switch >
-        <
-        Route exact path = "/" >
-        <
-        Home / >
-        <
-        /Route>  <
-        Route exact path = "/about" >
-        <
-        About / >
-        <
-        /Route>  < /
-        Switch > <
-        /div>< /Router >
-        <
-        /TaskState>< / >
+        <TaskState>
+        <Router>
+        <Navbar / > 
+        <Alert message = "this is alert" / > 
+        <div className = "container" >
+            <Switch >
+            <Route exact path = "/" >
+            <Home / >
+            </Route> 
+            <Route exact path = "/about" >
+            <About / >
+            </Route>  
+            </Switch> 
+        </div>
+        </Router >
+        </TaskState>
+        </>
 
     );
 }
