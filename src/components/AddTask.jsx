@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import contextVal from "../context/TaskContext";
 
-export default function AddTask() {
+export default function AddTask(props) {
 
     const con = useContext(contextVal);
     const { addTask } = con;
@@ -11,6 +11,7 @@ export default function AddTask() {
         e.preventDefault();
         addTask(newTask.title, newTask.description, newTask.reminder);
         setnewTask({ title: "", description: "", reminder: "false" })
+        props.showAlert("Added Successfully ", "success")
     }
     const onChange = (e) => {
         setnewTask({...newTask, [e.target.name]: e.target.value })

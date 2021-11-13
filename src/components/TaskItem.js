@@ -13,7 +13,7 @@ const TaskItem = (props) => {
                     <h5 className="card-title" > {task.title} </h5>
                     <p className="card-text" > {task.description} </p>
                     <p className="card-text" > Reminder = {task.reminder}</p>
-                    <i className="fas fa-trash mx-1" onClick={() => { deleteTask(task._id) }}> </i>
+                    <i className="fas fa-trash mx-1" onClick={() => { deleteTask(task._id); props.showAlert("deleted Successfully ", "success")}}> </i>
                     <i className="fas fa-pen mx-2" onClick={() => { updateTask(task) }}> </i>
                 </div >
             </div>

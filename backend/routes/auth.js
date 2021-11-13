@@ -16,6 +16,7 @@ const fetchUser = require('../middleware/fetchUser');
 // ROUTE 1: Creating a user using "POST" FROM "/api/auth/createUser" doesnt require login
 router.post('/createUser', [body('email', 'Enter a valid email').isEmail(), body('password', "Password must be atleast 5 characters").isLength({ min: 5 }), body('name', 'Enter a valid name').isLength({ min: 3 })], async(req, res) => {
     const errors = validationResult(req);
+    let success=false;
     // handles any error that may be thrown
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -25,7 +26,7 @@ router.post('/createUser', [body('email', 'Enter a valid email').isEmail(), body
         let user = await User.findOne({ email: req.body.email });
         // check whether a user with the same email exist or not
         if (user) {
-            return res.status(400).json({ error: "User already exists!Please LOGIN" })
+            return res.status(400).json({ success,error: "User already exists!Please LOGIN" })
         }
 
         // salt gets stored internally by the bcrypt module
@@ -43,10 +44,11 @@ router.post('/createUser', [body('email', 'Enter a valid email').isEmail(), body
                     id: user.id
                 }
             }
-            // authToken is used to verify/authenticate the users.
+        // authToken is used to verify/authenticate the users.
 
         const authToken = jwt.sign(data, JWT_SECRET);
-        res.json({ authToken })
+        success=true;
+        res.json({ success,authToken })
 
     } catch (error) {
         // for any other error
@@ -60,7 +62,7 @@ router.post('/createUser', [body('email', 'Enter a valid email').isEmail(), body
 router.post('/login', [body('email', 'Enter a valid email').isEmail(),
     body('password', 'Password cannot be blank').exists()
 ], async(req, res) => {
-
+    let success=false;
     const errors = validationResult(req);
     // handles any error that may be thrown
     if (!errors.isEmpty()) {
@@ -77,7 +79,7 @@ router.post('/login', [body('email', 'Enter a valid email').isEmail(),
         // comparing the hash of the password in the database with the password entered by the user.
         const passCompare = await bcrypt.compare(password, user.password)
         if (!passCompare) {
-            return res.status(400).json({ error: "Please login using correct credentials." })
+            return res.status(400).json({ success,error: "Please login using correct credentials." })
         }
         const payload = {
             user: {
@@ -85,7 +87,8 @@ router.post('/login', [body('email', 'Enter a valid email').isEmail(),
             }
         }
         const authToken = jwt.sign(payload, JWT_SECRET);
-        res.json({ authToken })
+        success=true;
+        res.json({ success,authToken })
 
     } catch (error) {
         console.error(error.message)

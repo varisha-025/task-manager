@@ -2,20 +2,29 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import contextVal from "../context/TaskContext";
 import TaskItem from "../components/TaskItem";
 import AddTask from './AddTask';
+import { useHistory } from 'react-router-dom';
 
-const Tasks = () => {
+const Tasks = (props) => {
     const con = useContext(contextVal);
     const { tasks, getTasks, editTask } = con;
+    let history=useHistory();
 
     const [task, settask] = useState({ id: "", etitle: "", edescription: "", ereminder: "" });
     useEffect(() => {
-        getTasks();
+        if(localStorage.getItem("token"))
+        {getTasks();
         // eslint-disable-next-line
+    }
+        else{
+            history.push("/login")
+        }
+        
     }, [])
 
     const updateTask = (curtask) => {
         ref.current.click()
         settask({ id: curtask._id, etitle: curtask.title, edescription: curtask.description, ereminder: curtask.reminder })
+        
     }
 
 
@@ -28,11 +37,12 @@ const Tasks = () => {
         editTask(task.id, task.etitle, task.edescription, task.ereminder)
         // getTasks();
         refClose.current.click()
+        props.showAlert("updated Successfully ", "success")
     }
     const ref = useRef(null)
     const refClose = useRef(null)
     return (<>
-        <AddTask />
+        <AddTask showAlert={props.showAlert}/>
 
         <button type="button" className="btn btn-primary my-3 d-none" ref={ref} data-bs-toggle="modal" data-bs-target="#exampleModal">
             button for modal
@@ -74,7 +84,7 @@ const Tasks = () => {
             {tasks.length === 0 && <p className="mx-1">No Tasks to show</p>}
             {tasks.map((task) => {
                 return <TaskItem key={task._id}
-                    updateTask={updateTask}
+                    updateTask={updateTask} showAlert={props.showAlert}
                     task={task} />;
             })}
         </div>
