@@ -19,6 +19,7 @@ const Login = (props) => {
 
         });
         const json = await response.json();
+        console.log(json)
         if (json.success){
             props.showAlert("logged in Successfully","success")
             // save the token
